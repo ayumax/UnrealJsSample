@@ -7687,6 +7687,14 @@ declare class AnimGraphNode_WheelHandler extends AnimGraphNode_SkeletalControlBa
 	static C(Other: UObject | any): AnimGraphNode_WheelHandler;
 }
 
+declare class DynamicJSComponent extends ActorComponent { 
+	static Load(ResourceName: string): DynamicJSComponent;
+	static Find(Outer: UObject, ResourceName: string): DynamicJSComponent;
+	static GetDefaultObject(): DynamicJSComponent;
+	static CreateDefaultSubobject(Name: string, Transient?: boolean, Required?: boolean, Abstract?: boolean): DynamicJSComponent;
+	static C(Other: UObject | any): DynamicJSComponent;
+}
+
 declare type EMeshPaintColorViewMode = 'Normal' | 'RGB' | 'Alpha' | 'Red' | 'Green' | 'Blue' | 'EMeshPaintColorViewMode_MAX';
 declare var EMeshPaintColorViewMode : { Normal:'Normal',RGB:'RGB',Alpha:'Alpha',Red:'Red',Green:'Green',Blue:'Blue',EMeshPaintColorViewMode_MAX:'EMeshPaintColorViewMode_MAX', };
 declare class PaintBrushSettings extends UObject { 
