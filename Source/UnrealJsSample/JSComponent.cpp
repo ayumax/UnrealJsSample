@@ -1,33 +1,107 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "JSComponent.h"
+#include "JavascriptComponent.h"
+#include "JavascriptIsolate.h"
+#include "JavascriptContext.h"
+#include "Engine/World.h"
+#include "Engine/Engine.h"
+#include "IV8.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "Regex.h"
 
-// Sets default values for this component's properties
-UDynamicJSComponent::UDynamicJSComponent()
+UJSComponent::UJSComponent()
+	: JavascriptContext(nullptr)
+	, JavascriptIsolate(nullptr)
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.TickInterval = 0.03f;
+	bTickInEditor = false;
+	bAutoActivate = true;
+	bWantsInitializeComponent = true;
 }
 
 
-// Called when the game starts
-void UDynamicJSComponent::BeginPlay()
+void UJSComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	//JavascriptContext->WriteDTS()
+
+	LoadJSFile();
 }
 
 
-// Called every frame
-void UDynamicJSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UJSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
 }
 
+
+void UJSComponent::OnRegister()
+{
+	auto ContextOwner = GetOuter();
+	if (ContextOwner && !HasAnyFlags(RF_ClassDefaultObject) && !ContextOwner->HasAnyFlags(RF_ClassDefaultObject))
+	{
+		if (GetWorld() && ((GetWorld()->IsGameWorld() && !GetWorld()->IsPreviewWorld()) || bActiveWithinEditor))
+		{
+			UJavascriptIsolate* Isolate = nullptr;
+			UJavascriptStaticCache* StaticGameData = Cast<UJavascriptStaticCache>(GEngine->GameSingleton);
+			if (StaticGameData)
+			{
+				if (StaticGameData->Isolates.Num() > 0)
+					Isolate = StaticGameData->Isolates.Pop();
+			}
+
+			if (!Isolate)
+			{
+				Isolate = NewObject<UJavascriptIsolate>();
+				Isolate->Init(false);
+				Isolate->AddToRoot();
+			}
+
+			auto* Context = Isolate->CreateContext();
+			JavascriptContext = Context;
+			JavascriptIsolate = Isolate;
+
+			Context->Expose("Root", this);
+			Context->Expose("GWorld", GetWorld());
+			Context->Expose("GEngine", GEngine);
+		}
+	}
+
+	Super::OnRegister();
+}
+
+void UJSComponent::SetJsObject(UJSObject* jsObject)
+{
+	JsObject = jsObject;
+}
+
+void UJSComponent::LoadJSFile()
+{
+	if (JavascriptContext == nullptr) return;
+
+	auto scriptSourceFilePath = FPaths::Combine(FPaths::ProjectContentDir(), ScriptSourceFile);
+
+	scriptSourceFilePath = FPaths::ConvertRelativePathToFull(scriptSourceFilePath);
+
+	FString script;
+	FFileHelper::LoadFileToString(script, *scriptSourceFilePath);
+
+	const FRegexPattern pattern = FRegexPattern(FString(TEXT("class\\s+(.+)\\s+extends\\s+JSObject")));
+	FRegexMatcher matcher(pattern, script);
+	if (matcher.FindNext())
+	{
+		auto className = matcher.GetCaptureGroup(1);
+
+		script = TEXT("(function (global) {\r\n") + script;
+		script += TEXT("let MyUObject_C = require('uclass')()(global,") + className + TEXT(")\r\n");
+		script += TEXT("let instance = new MyUObject_C()\r\n");
+		script += TEXT("Root.SetJsObject(instance)\r\n");
+		script += TEXT("})(this)");
+
+		JavascriptContext->RunScript(script);
+	}
+
+	
+}

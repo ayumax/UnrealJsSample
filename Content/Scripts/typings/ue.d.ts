@@ -7687,12 +7687,26 @@ declare class AnimGraphNode_WheelHandler extends AnimGraphNode_SkeletalControlBa
 	static C(Other: UObject | any): AnimGraphNode_WheelHandler;
 }
 
-declare class DynamicJSComponent extends ActorComponent { 
-	static Load(ResourceName: string): DynamicJSComponent;
-	static Find(Outer: UObject, ResourceName: string): DynamicJSComponent;
-	static GetDefaultObject(): DynamicJSComponent;
-	static CreateDefaultSubobject(Name: string, Transient?: boolean, Required?: boolean, Abstract?: boolean): DynamicJSComponent;
-	static C(Other: UObject | any): DynamicJSComponent;
+declare class JSObject extends UObject { 
+	static Load(ResourceName: string): JSObject;
+	static Find(Outer: UObject, ResourceName: string): JSObject;
+	static GetDefaultObject(): JSObject;
+	static CreateDefaultSubobject(Name: string, Transient?: boolean, Required?: boolean, Abstract?: boolean): JSObject;
+	static C(Other: UObject | any): JSObject;
+}
+
+declare class JSComponent extends ActorComponent { 
+	ScriptSourceFile: string;
+	bActiveWithinEditor: boolean;
+	JavascriptContext: JavascriptContext;
+	JavascriptIsolate: JavascriptIsolate;
+	JSObject: JSObject;
+	static Load(ResourceName: string): JSComponent;
+	static Find(Outer: UObject, ResourceName: string): JSComponent;
+	static GetDefaultObject(): JSComponent;
+	static CreateDefaultSubobject(Name: string, Transient?: boolean, Required?: boolean, Abstract?: boolean): JSComponent;
+	SetJsObject(JSObject: JSObject): void;
+	static C(Other: UObject | any): JSComponent;
 }
 
 declare type EMeshPaintColorViewMode = 'Normal' | 'RGB' | 'Alpha' | 'Red' | 'Green' | 'Blue' | 'EMeshPaintColorViewMode_MAX';

@@ -1,0 +1,4 @@
+class MyUObject extends JSObject {
+
+  }
+  
