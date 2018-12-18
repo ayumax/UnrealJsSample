@@ -12,4 +12,9 @@ class UNREALJSSAMPLE_API UJSObject : public UObject
 public:	
 	UJSObject();
 
+
+	UFUNCTION(BlueprintImplementableEvent)
+		FString NotifyTrigger();
+
+
 };

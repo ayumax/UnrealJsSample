@@ -7,6 +7,7 @@
 #include "IV8.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Regex.h"
+#include "JSObject.h"
 
 UJSComponent::UJSComponent()
 	: JavascriptContext(nullptr)
@@ -23,8 +24,6 @@ UJSComponent::UJSComponent()
 void UJSComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//JavascriptContext->WriteDTS()
 
 	LoadJSFile();
 }
@@ -102,6 +101,14 @@ void UJSComponent::LoadJSFile()
 
 		JavascriptContext->RunScript(script);
 	}
+}
 
-	
+FString UJSComponent::NotifyTrigger()
+{
+	if (JsObject != nullptr)
+	{
+		return JsObject->NotifyTrigger();
+	}
+
+	return FString();
 }

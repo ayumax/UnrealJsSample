@@ -37,10 +37,14 @@ public:
 	UPROPERTY(transient)
 		UJavascriptIsolate* JavascriptIsolate;
 
-	void LoadJSFile();
+	UFUNCTION(BlueprintCallable, Category = "Javascript")
+		void LoadJSFile();
 
 	UFUNCTION(BlueprintCallable, Category = "Javascript")
 		void SetJsObject(UJSObject* jsObject);
+
+	UFUNCTION(BlueprintCallable, Category = "Javascript")
+		FString NotifyTrigger();
 
 private:
 	UPROPERTY()

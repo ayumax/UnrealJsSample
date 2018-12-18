@@ -7692,6 +7692,7 @@ declare class JSObject extends UObject {
 	static Find(Outer: UObject, ResourceName: string): JSObject;
 	static GetDefaultObject(): JSObject;
 	static CreateDefaultSubobject(Name: string, Transient?: boolean, Required?: boolean, Abstract?: boolean): JSObject;
+	NotifyTrigger(): string;
 	static C(Other: UObject | any): JSObject;
 }
 
@@ -7706,6 +7707,8 @@ declare class JSComponent extends ActorComponent {
 	static GetDefaultObject(): JSComponent;
 	static CreateDefaultSubobject(Name: string, Transient?: boolean, Required?: boolean, Abstract?: boolean): JSComponent;
 	SetJsObject(JSObject: JSObject): void;
+	NotifyTrigger(): string;
+	LoadJSFile(): void;
 	static C(Other: UObject | any): JSComponent;
 }
 
