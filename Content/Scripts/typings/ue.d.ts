@@ -7698,7 +7698,6 @@ declare class JSObject extends UObject {
 
 declare class JSComponent extends ActorComponent { 
 	ScriptSourceFile: string;
-	bActiveWithinEditor: boolean;
 	JavascriptContext: JavascriptContext;
 	JavascriptIsolate: JavascriptIsolate;
 	JSObject: JSObject;

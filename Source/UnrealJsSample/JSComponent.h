@@ -23,14 +23,10 @@ protected:
 
 public:
 	virtual void OnRegister() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Javascript")
 		FString ScriptSourceFile;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Javascript")
-		bool bActiveWithinEditor;
-
 	UPROPERTY(transient)
 		UJavascriptContext* JavascriptContext;
 
